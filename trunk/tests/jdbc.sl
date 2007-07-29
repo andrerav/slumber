@@ -45,6 +45,11 @@
 # Include the JDBC module
 use(^no.printf.slumber.JDBC);
 
+# Enable debugging
+debug(debug() | 4);
+debug(debug() | 34);
+
+
 #-- BEGIN UNIT TEST FRAMEWORK
 # todo: add this to a separate file when possible.
 
@@ -86,12 +91,14 @@ sub getConnectionHandle {
 }
 
 sub verifyUserData {
+    local('@data');
     @data = $1;
     if (@data[0]['id'] != 1) { return "Invalid user data"; }
     if (@data[1]['id'] != 2) { return "Invalid user data"; }
     return 1;
 }
 sub verifyUserDataArray {
+    local('@data');
     @data = $1;
     if (@data[0][0] != 1) { return "Invalid user data"; }
     if (@data[1][0] != 2) { return "Invalid user data"; }
@@ -99,7 +106,7 @@ sub verifyUserDataArray {
 }
 # Tests that we are able to open and close a connection to the database
 sub test1 {
-    local('$result $handle $status %row');
+    local('$result $handle $status %row $err');
     $handle = getConnectionHandle();
     if (checkError($err)) { return $err; }
     dbClose($handle);
@@ -111,7 +118,7 @@ sub test1 {
 
 # Uses dbFetch()
 sub test2 {
-    local('$result $handle $status %row @dataStack');
+    local('$result $handle $status %row @dataStack $err');
     $handle = getConnectionHandle();
     if (checkError($err)) { return $err; }
     $result = dbQuery($handle, 'select * from users');
@@ -132,7 +139,7 @@ sub test2 {
 
 # Uses dbAssign()
 sub test3 {
-    local('$result $handle $status %row @dataStack');
+    local('$result $handle $status %row @dataStack $err');
     $handle = getConnectionHandle();
     if (checkError($err)) { return $err; }
     $result = dbQuery($handle, 'select * from users');
@@ -147,7 +154,7 @@ sub test3 {
 
 # Uses dbFetchArray()
 sub test4 {
-    local('$result $handle $status @row @dataStack');
+    local('$result $handle $status @row @dataStack $err');
     $handle = getConnectionHandle();
     if (checkError($err)) { return $err; }
     $result = dbQuery($handle, 'select * from users');
@@ -168,7 +175,7 @@ sub test4 {
 
 # Uses dbAssignArray()
 sub test5 {
-    local('$result $handle $status @row @dataStack');
+    local('$result $handle $status @row @dataStack $err');
     $handle = getConnectionHandle();
     if (checkError($err)) { return $err; }
     $result = dbQuery($handle, 'select * from users');
@@ -183,7 +190,7 @@ sub test5 {
 
 # Uses dbFetchBuffered()
 sub test6 {
-    local('$result $handle $status @rows @dataStack');
+    local('$result $handle $status @rows @dataStack $err');
     $handle = getConnectionHandle();
     if (checkError($err)) { return $err; }
     $result = dbQuery($handle, 'select * from users');
@@ -196,7 +203,7 @@ sub test6 {
 
 # Uses dbFetchBufferedArray()
 sub test7 {
-    local('$result $handle $status @rows @dataStack');
+    local('$result $handle $status @rows @dataStack $err');
     $handle = getConnectionHandle();
     if (checkError($err)) { return $err; }
     $result = dbQuery($handle, 'select * from users');
@@ -211,7 +218,7 @@ sub test7 {
 # and then deletes it all again. This also verifies that the
 # value returned from dbUpdate() is valid.
 sub test8 {
-    local('$result $handle $status @rows @dataStack $affectedRows $upd');
+    local('$result $handle $status @rows @dataStack $affectedRows $upd $rand %row $err');
     $handle = getConnectionHandle();
     if (checkError($err)) { return $err; }
     $rand = int(rand(10000));
@@ -238,7 +245,7 @@ sub test8 {
 
 # Verifies that dbFetchedRows() works as expected
 sub test9 {
-    local('$result $handle $status @rows @dataStack $row');
+    local('$result $handle $status @rows @dataStack $row @row %row $err');
     $handle = getConnectionHandle();
     if (checkError($err)) { return $err; }
     $result = dbQuery($handle, 'select * from users');
@@ -265,7 +272,7 @@ sub test9 {
 # Concurrency test
 sub test10 {
     println("Performing concurrency test..");
-    local('$i $id');
+    local('$i $id $err');
     $i = 0;
     while ($i < 10) {
         fork(&test10_branch);
@@ -278,7 +285,7 @@ sub test10 {
 
 }
 sub test10_branch {
-    local('$result $i $handle @dataset $id');
+    local('$result $i $handle @dataset $id $err');
     $id = rand(1000);
     $handle = getConnectionHandle();
     if (checkError($err)) { println("Branch error: " . $err); }
@@ -294,7 +301,7 @@ sub test10_branch {
 
 # Stress test, insert and delete a bunch of rows
 sub test11 {
-    local('$handle $result $err $q $affectedRows $i');
+    local('$handle $result $err $q $affectedRows $i $rand');
     $handle = getConnectionHandle();
     if (checkError($err)) { return $err; }
     while ($i < 2000) {
@@ -319,7 +326,7 @@ sub test11 {
 # Inserts a large number of rows, then fetches them again, then delets them.
 # Both insertion and deletion is timed
 sub test12 {
-    local('$handle $result $rand $i $query $affectedRows');
+    local('$handle $result $rand $i $query $affectedRows @rows $err');
     $handle = getConnectionHandle();
     if (checkError($err)) { return $err; }
     $i = 0;
@@ -351,6 +358,43 @@ sub test12 {
     return 1;
 }
 
+# Prepared statements test
+sub test13 {
+    local('$handle $stmt $result @rows $err');
+    $handle = getConnectionHandle();
+	
+    $stmt = dbPrepare($handle, 'select * from users where zip = ? limit 1');
+    $result = dbSet($stmt, 1, 5997);
+    
+    # Check for errors 
+    if (checkError($err)) { return $err; }
+   
+	# Check if value successfully set
+    if ($result == 0) {
+    	return 0;    	
+    }
+    
+    # Execute statement
+    $result = dbExecute($stmt);
+    
+    # Check for errors 
+    if (checkError($err)) { return $err; }
+    
+    # Fetch rows
+    @rows = dbFetchBuffered($result);
+    if (checkError($err)) { return $err; }
+    foreach %row (@rows) {
+        if (%row['address'] ne 'California') {
+            return 'Row data mismatch';
+        }
+    }
+    
+    return 1;
+}
+
+#Blob test
+
+
 _assert("test1");
 _assert("test2");
 _assert("test3");
@@ -363,3 +407,5 @@ _assert("test9");
 _assert("test10");
 _assert("test11");
 _assert("test12");
+_assert("test13");
+

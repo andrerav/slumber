@@ -556,7 +556,7 @@ public class JDBC implements Loadable
                 instance.getScriptEnvironment().flagError(e.getMessage());
                 return SleepUtils.getScalar(false);
             }
-            
+            System.out.println("Everything in order");
             return SleepUtils.getScalar(true);
         }
         
@@ -591,7 +591,14 @@ public class JDBC implements Loadable
             PreparedStatement stmt = (PreparedStatement)BridgeUtilities.getObject(args);
             
             try {
-                return SleepUtils.getScalar(stmt.execute());
+                boolean result = stmt.execute();
+                
+                if (result) {
+                    return SleepUtils.getScalar(stmt.getResultSet());
+                }
+                else {
+                    return SleepUtils.getScalar(stmt.getUpdateCount());
+                }
             } 
             catch(Exception e) {
                 instance.getScriptEnvironment().flagError(e.getMessage());
