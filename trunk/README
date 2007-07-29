@@ -40,9 +40,11 @@ JDBC library functions:
 			Prepares a query and optionally sets the given values. Refer to the
 			J2SE documentation for statement syntax.
 			
-	$bool	dbSet($stmt, $index, $value)
+	$bool	dbSet($stmt, $index, $value, [$type])
 			Sets a value in the statement at the specified position given by $index.
 			Returns true if the value was successfully set, false otherwise.
+			
+			A custom SQL type can be specified with $type -- 
 	
 	$result	dbExecute($stmt)
 			Executes the given prepared statement. The $result returned is a result set

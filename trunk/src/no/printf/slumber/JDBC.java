@@ -43,7 +43,6 @@ public class JDBC implements Loadable
     // Number of fetched rows in the previous SQL query
     private static int fetchedRows;
 
-
     // Cache for result rows so they don't have to be created
     // for every row fetch
     // private static HashMap rowCache = new HashMap(20);
@@ -54,7 +53,6 @@ public class JDBC implements Loadable
     {
         return true;
     }
-
 
     public boolean scriptLoaded(ScriptInstance s)
     {
@@ -548,18 +546,23 @@ public class JDBC implements Loadable
             int index = BridgeUtilities.getInt(args);
             Object value = BridgeUtilities.getObject(args);
             
+            int type = java.sql.Types.JAVA_OBJECT;
+            
+            /* Check for user-specified type */
+            if (args.size() > 0) {
+                type = BridgeUtilities.getInt(args);
+            }
+            
             /* Set value */
             try {
-                stmt.setObject(index, value);
+                stmt.setObject(index, value, type);
             } 
             catch(Exception e) {
                 instance.getScriptEnvironment().flagError(e.getMessage());
                 return SleepUtils.getScalar(false);
             }
-            System.out.println("Everything in order");
             return SleepUtils.getScalar(true);
         }
-        
     }
     
     /**
