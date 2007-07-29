@@ -207,7 +207,7 @@ public class Text implements Loadable {
 
 class HtmlEntityEncoder {
     
-    private static HashMap entityTable;
+    private static HashMap<String, String> entityTable;
 
     private final static String[] ENTITYLIST = {
         " ", " ", "-", "-", "'", "'", "`","`",
@@ -275,7 +275,7 @@ class HtmlEntityEncoder {
     
     // Create the initial hashmap
     private static void buildTable() {
-        entityTable = new HashMap(ENTITYLIST.length);
+        entityTable = new HashMap<String, String>(ENTITYLIST.length);
 
         for (int i = 0; i < ENTITYLIST.length; i += 2) {
             if (!entityTable.containsKey(ENTITYLIST[i + 1])) {
@@ -319,7 +319,7 @@ class HtmlEntityEncoder {
     
     // Looks up a single char in the table and returns its equivalent, if any
     protected static String encodeSingleChar(String subject) {
-        String replacement = (String)entityTable.get(subject);
+        String replacement = entityTable.get(subject);
         return (replacement == null) ? subject : replacement;
     }
 }

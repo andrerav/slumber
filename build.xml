@@ -7,34 +7,45 @@
   <property name="src" location="src"/>
   <property name="bin" location="bin"/>
   <property name="dist"  location="dist"/>
+  <property name="lib"  location="lib"/>
 
+  <path id="Slumber.classpath">
+  	<pathelement location="bin"/>
+	<pathelement location="lib/sleep.jar"/>
+  </path>
   <target name="init">
     <!-- Create the time stamp -->
     <tstamp/>
 
     <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${build}"/>
+    <mkdir dir="${bin}"/>
   </target>
 
   <target name="compile" depends="init"
         description="compile the source " >
-    <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}"/>
+    <!-- Compile the java code from ${src} into ${bin} -->
+    <javac srcdir="${src}" destdir="${bin}">
+    	<classpath refid="Slumber.classpath"/>
+    </javac>
   </target>
 
   <target name="dist" depends="compile"
         description="generate the distribution" >
-    <!-- Create the distribution directory -->
+    
+  	<!-- Create the distribution directory -->
     <mkdir dir="${dist}" />
 
     <!-- Put everything in ${build} into the Slumber-${DSTAMP}.jar file -->
-    <jar jarfile="${dist}/Slumber-${DSTAMP}.jar" basedir="${build}"/>
+    <jar jarfile="${dist}/slumber-${DSTAMP}.jar" basedir="${bin}"/>
+
+  	<!-- Put a copy in ${lib} for running tests -->
+    <jar jarfile="${lib}/slumber.jar" basedir="${bin}"/>
   </target>
 
   <target name="clean"
         description="clean up" >
     <!-- Delete the ${build} and ${dist} directory trees -->
-    <delete dir="${build}"/>
+    <delete dir="${bin}"/>
     <delete dir="${dist}"/>
   </target>
 </project>

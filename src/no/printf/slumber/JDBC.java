@@ -48,7 +48,7 @@ public class JDBC implements Loadable
     // for every row fetch
     // private static HashMap rowCache = new HashMap(20);
     // private static HashMap arrayRowCache = new HashMap(20);
-    private static HashMap statementCache = new HashMap(20);
+    private static HashMap<Connection, Statement> statementCache = new HashMap<Connection, Statement>(20);
 
     public boolean scriptUnloaded(ScriptInstance s)
     {
@@ -56,7 +56,6 @@ public class JDBC implements Loadable
     }
 
 
-    @SuppressWarnings("unchecked")
     public boolean scriptLoaded(ScriptInstance s)
     {
 
@@ -464,6 +463,11 @@ public class JDBC implements Loadable
     private static class dbPrepare implements Function
     {
 
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1687493511177917567L;
+
         /* (non-Javadoc)
          * @see sleep.interfaces.Function#evaluate(java.lang.String, sleep.runtime.ScriptInstance, java.util.Stack)
          */
@@ -523,6 +527,11 @@ public class JDBC implements Loadable
      */
     private static class dbSet implements Function
     {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 7883375884590149183L;
+
         /* (non-Javadoc)
          * @see sleep.interfaces.Function#evaluate(java.lang.String, sleep.runtime.ScriptInstance, java.util.Stack)
          */
@@ -561,6 +570,11 @@ public class JDBC implements Loadable
      */
     private static class dbExecute implements Function
     {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 8088754343975056604L;
 
         /* (non-Javadoc)
          * @see sleep.interfaces.Function#evaluate(java.lang.String, sleep.runtime.ScriptInstance, java.util.Stack)
@@ -687,11 +701,11 @@ public class JDBC implements Loadable
         }
 
         public Scalar put(String key, Scalar value) {
-            return (Scalar)this.values.put(key, value);
+            return (Scalar) (((HashMap<String,Scalar>)this.values).put(key, value));
         }
 
         public Scalar get(String key) {
-            return (Scalar)this.values.get(key);
+            return (Scalar) this.values.get(key);
         }
 
         public Object clone() {
@@ -716,7 +730,7 @@ public class JDBC implements Loadable
     private static Statement getStatement(Connection c) {
 
         // Try to fetch from cache first
-        Statement stmt = (Statement)JDBC.statementCache.get(c);
+        Statement stmt = JDBC.statementCache.get(c);
 
         // Check if it existed in cache
         if (stmt == null) {
@@ -735,7 +749,7 @@ public class JDBC implements Loadable
             if (JDBC.statementCache.size() >= 20) {
 
                 // Flush the cache
-                JDBC.statementCache = new HashMap(20);
+                JDBC.statementCache = new HashMap<Connection, Statement>(20);
             }
 
             // Put the new statement object into the cache
