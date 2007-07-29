@@ -1,0 +1,107 @@
+Slumber - useful extensions for Sleep
+
+QUICKSTART 
+-------------------------------------------------------------
+unzip and add slumber.jar (and optionally a MySQL connector) to Sleep's classpath. 
+Then you can use the following script as a template for your own scripts:
+
+use("no.printf.slumber.JDBC"); // Database connectivity
+use("no.printf.slumber.Text"); // Additional text-related functions
+
+CONNECTING TO A DATABASE
+-------------------------------------------------------------
+Here is a typical example with MySQL:
+
+$handle = dbConnect('com.mysql.jdbc.Driver', 'jdbc:mysql://localhost/database', 'user', 'pass');
+$result = dbQuery($handle, 'select * from table');
+while (dbAssign($result, %row)) {
+  println(%row);
+}
+
+Of course you will need a working mysql database running on localhost to do
+this :) http://www.mysql.com/ - remember to get the JDBC connector as well
+and put it in the classpath.
+
+Note! The JDBC driver should work with any JDBC-compliant database, but has 
+only been tested with MySQL.
+
+FUNCTION REFERENCE
+-------------------------------------------------------------
+JDBC library functions:
+    $handle dbConnect($driver, $url, $username, $password)
+            Returns a handle to a database connection. This handle can be used for 
+            performing queries and various operations on the database.
+
+	$empty	dbClose($handle)
+			Closes the connection to a database designated by the given $handle from
+			a previous dbConnect() call.
+			
+	$stmt   dbPrepare($handle, $query, [$value0, $value1, ...])
+			Prepares a query and optionally sets the given values. Refer to the
+			J2SE documentation for statement syntax.
+			
+	$bool	dbSet($stmt, $index, $value)
+			Sets a value in the statement at the specified position given by $index.
+	
+	$bool	dbExecute($stmt)
+			Executes the given prepared statement. Alias: dbExec().
+
+    $result dbQuery($handle, $query)
+            Performs a query on a database connection and returns a resultset that can
+            be used to retrieve data rows.
+
+    %row    dbFetch($result)
+            Returns a single row of data from the resultset, represented as a hash.
+            Columns as keys, data as values.
+
+    @row    dbFetchArray($result)
+            Returns a single row as an array.
+
+    %row    dbAssign($result, %ptRow)
+            Identical to dbFetch(), except that it puts the datarow into the %ptRow
+            argument as well. This is useful for making clean and tidy loops
+            For example: while(dbAssign($result, %row) { Do_stuff(%row); }
+
+    @row    dbAssignArray($result, @ptRow)
+            Identical to dbFetchArray(), except that it puts the datarow into the @ptRow
+            argument as well. This is useful for making clean and tidy loops
+            For example: while(dbAssignArray($result, @row) { Do_stuff(@row); }
+
+	@rows   dbFetchBuffered($result)
+			Returns all rows from resultset at once. This is a fast alternative to
+			dbFetch(), at the expense of more memory usage.
+
+	@rows   dbFetchBufferedArray($result)
+			Returns all rows from resultset at once. This is a fast alternative to
+			dbFetchArray(), at the expense of more memory usage. Note that this implies 
+			that @rows will be an array of arrays.
+
+    $number dbUpdate($handle, $update)
+            Performs an update (INSERT, DELETE, UPDATE) on the database and returns the
+            number of rows affected.
+
+	$number dbFetchedRows()
+			Returns the number of fetched rows in the previous dbFetchBuffered*() call.
+
+Text library functions:
+	$string format($subject, $arg0, $arg1, ...)
+	        Replaces '{0}' with $arg0, '{1}' with $arg1, and so on. For example:
+	           format("Hi {0}, my name is {1}!", "Raphael", "Andreas");
+	        returns "Hi Raphael, my name is Andreas!".
+	
+	$string htmlEntities($html)
+			Converts any suitable characters in $html into proper HTML entities.
+	
+	$string removeHtmlTags($html)
+			Strips HTML tags from $html.
+			
+	$string urlEncode($subject)
+			Performs an URL encode on $subject.
+	
+	$string urlDecode($subject)
+			Performs an URL decode on $subject.
+
+HACKING
+-------------------------------------------------------------
+    If you want to hack on these modules, feel free to do so. The source is distributed
+    under the GPL license.
