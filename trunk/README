@@ -6,7 +6,7 @@ unzip and add slumber.jar (and optionally a MySQL connector) to Sleep's classpat
 Then you can use the following script as a template for your own scripts:
 
 use(^no.printf.slumber.JDBC); // Database connectivity
-use(^no.printf.slumber.Text); // Additional text-related functions
+use(^no.printf.slumber.Text); // Text-related functions
 
 CONNECTING TO A DATABASE
 -------------------------------------------------------------
@@ -44,7 +44,7 @@ JDBC library functions:
 			Sets a value in the statement at the specified position given by $index.
 			Returns true if the value was successfully set, false otherwise.
 			
-			A custom SQL type can be specified with $type -- 
+			A custom SQL type can be specified with $type -- refer to java.sql.Types.
 	
 	$result	dbExecute($stmt)
 			Executes the given prepared statement. The $result returned is a result set
