@@ -109,3 +109,8 @@ HACKING
 -------------------------------------------------------------
     If you want to hack on these modules, feel free to do so. The source is distributed
     under the GPL license.
+    
+    To execute the unit tests, run the following command:
+    java -cp sleep.jar;mysql.jar;slumber.jar sleep.console.TextConsole tests/jdbc.sl
+    
+    (assuming mysql.jar is a mysql connector jar)
