@@ -54,7 +54,6 @@ public class Text implements Loadable {
         env.put("&urlEncode",         new Text.urlEncode());
         env.put("&urlDecode",         new Text.urlDecode());
         
-        // TODO Auto-generated method stub
         return true;
     }
 
@@ -62,7 +61,6 @@ public class Text implements Loadable {
      * @see sleep.interfaces.Loadable#scriptUnloaded(sleep.runtime.ScriptInstance)
      */
     public boolean scriptUnloaded(ScriptInstance arg0) {
-        // TODO Auto-generated method stub
         return true;
     }
 
@@ -107,7 +105,6 @@ public class Text implements Loadable {
                 result.append(subject.replace("{" + i + "}", current_replacement));
             }
             
-            // TODO Auto-generated method stub
             return SleepUtils.getScalar(result.toString());
         }
         
