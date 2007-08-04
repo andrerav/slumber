@@ -5,8 +5,9 @@ QUICKSTART
 unzip and add slumber.jar (and optionally a MySQL connector) to Sleep's classpath. 
 Then you can use the following script as a template for your own scripts:
 
-use(^no.printf.slumber.JDBC); // Database connectivity
-use(^no.printf.slumber.Text); // Text-related functions
+use(^no.printf.slumber.JDBC);   // Database connectivity
+use(^no.printf.slumber.Text);   // Text-related functions
+use(^no.printf.slumber.XMLRPC); // XML-RPC functions (requires apache xml-rpc)
 
 CONNECTING TO A DATABASE
 -------------------------------------------------------------
