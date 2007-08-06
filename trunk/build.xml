@@ -13,6 +13,8 @@
   <path id="Slumber.classpath">
   	<pathelement location="bin"/>
 	<pathelement location="lib/sleep.jar"/>
+	<pathelement location="lib/xmlrpc-client-3.0.jar"/>
+	<pathelement location="lib/xmlrpc-common-3.0.jar"/>
   </path>
 
   <target name="init">
