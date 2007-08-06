@@ -45,8 +45,8 @@ public class XMLRPC implements Loadable {
         Hashtable<String, Function> env = (Hashtable<String, Function>)(s.getScriptEnvironment().getEnvironment());
 
         // Connection
-        env.put("&xrCreateClient",         new XMLRPC.XRCreateClient());
-        env.put("&xrExecute",              new XMLRPC.XRExecute());
+        env.put("&xmlRpcCreateClient", new XMLRPC.XmlRpcCreateClient());
+        env.put("&xmlRpcExecute",      new XMLRPC.XmlRpcExecute());
 
 		
 		return true;
@@ -64,7 +64,7 @@ public class XMLRPC implements Loadable {
 	 * @author andreas
 	 *
 	 */
-	private static class XRCreateClient implements Function {
+	private static class XmlRpcCreateClient implements Function {
 
 		/**
 		 * 
@@ -83,9 +83,8 @@ public class XMLRPC implements Loadable {
             }
             
             /* Get configuration for XML-RPC client */
-            String url = new String();
-            BridgeUtilities.getString(args, url);
-
+            String url = BridgeUtilities.getString(args, null);
+            
 			try {
 				
 				/* Create config */
@@ -112,7 +111,7 @@ public class XMLRPC implements Loadable {
 	 * @author andreas
 	 *
 	 */
-	private static class XRExecute implements Function {
+	private static class XmlRpcExecute implements Function {
 
 		/**
 		 * 
@@ -123,9 +122,9 @@ public class XMLRPC implements Loadable {
 		 * @see sleep.interfaces.Function#evaluate(java.lang.String, sleep.runtime.ScriptInstance, java.util.Stack)
 		 */
 		public Scalar evaluate(String name, ScriptInstance instance, Stack args) {
-			
+
 			/* Check number of arguments */
-            if (args.size() < 3) {
+            if (args.size() < 2) {
                 instance.getScriptEnvironment().flagError("Not enough arguments");
                 return null;
             }
@@ -133,18 +132,25 @@ public class XMLRPC implements Loadable {
             /* Get XML-RPC client */
             XmlRpcClient client = (XmlRpcClient)(BridgeUtilities.getObject(args));
             
-            /* Get procedure to execute */
-            String proc = new String();
-            BridgeUtilities.getString(args, proc);
+            /* Get procedure name to execute */
+            String proc = BridgeUtilities.getString(args, null);
+
+            /* Params for the service, if any */
+            Object[] params = new Object[0];
             
-            /* Get params */
-            ScalarArray params = BridgeUtilities.getArray(args);
-            params.
-           
+            if (args.size() > 0) {
+	            /* Get params, this is pretty stupid */
+	            ScalarArray scalarParams = BridgeUtilities.getArray(args);
+	            params = new Object[scalarParams.size()];
+	            int i = 0;
+	            while(scalarParams.scalarIterator().hasNext()) {
+	            	params[i] = scalarParams.scalarIterator().next();
+	            	i++;
+	            }
+            }
 
 			try {
-			    
-			    return SleepUtils.getScalar(client.execute(proc, params));
+					return SleepUtils.getScalar(client.execute(proc, params));
 
 			} catch (Exception e) {
                 instance.getScriptEnvironment().flagError(e.getMessage());
