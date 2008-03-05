@@ -545,8 +545,8 @@ public class JDBC implements Loadable
             PreparedStatement stmt = (PreparedStatement)BridgeUtilities.getObject(args);
             int index = BridgeUtilities.getInt(args);
             Object value = BridgeUtilities.getObject(args);
-            
-            int type = java.sql.Types.JAVA_OBJECT;
+
+            int type = java.sql.Types.BINARY;
             
             /* Check for user-specified type */
             if (args.size() > 0) {
@@ -637,9 +637,8 @@ public class JDBC implements Loadable
                 // This code populates the row map with values mapped to
                 // keys (columns)
                 for (int i = 1; i <= t; i++) {
-
                     // Put column/value into row hash
-                    row.put(resultmd.getColumnLabel(i), SleepUtils.getScalar(result.getString(i)));
+                    row.put(resultmd.getColumnLabel(i), SleepUtils.getScalar(result.getObject(i)));
                 }
 
                 return row;
@@ -719,7 +718,7 @@ public class JDBC implements Loadable
         }
 
         public Object clone() {
-            return (Object)(new RowScalarHash((HashMap)this.values.clone()));
+            return (Object)(new RowScalarHash((HashMap)((HashMap)(this.values)).clone()));
         }
 
         public String toString() {
