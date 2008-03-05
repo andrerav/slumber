@@ -3,16 +3,6 @@
 use(^no.printf.slumber.JDBC);
 use(^no.printf.slumber.Text);
 
-
-# Enable debugging
-debug(debug() | 2);
-debug(debug() | 4);
-debug(debug() | 8);
-debug(debug() | 24);
-debug(debug() | 34);
-debug(debug() | 64);
-
-
 #-- BEGIN UNIT TEST FRAMEWORK
 # todo: add this to a separate file when possible.
 

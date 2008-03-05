@@ -85,7 +85,8 @@ JDBC library functions:
 
     $number dbUpdate($handle, $update)
             Performs an update (INSERT, DELETE, UPDATE) on the database and returns the
-            number of rows affected.
+            number of rows affected. You should consider using prepared statements
+            instead to avoid SQL injection vulnerabilities.
 
 	$number dbFetchedRows()
 			Returns the number of fetched rows in the previous dbFetchBuffered*() call.
@@ -117,3 +118,14 @@ HACKING
     java -cp sleep.jar;mysql.jar;slumber.jar sleep.console.TextConsole tests/all.sl
     
     (assuming mysql.jar is a mysql connector jar)
+
+VERSION HISTORY
+-------------------------------------------------------------
+
+1.0 Beta - 5. march 2008
+ - Fixed row fields being erronously converted to strings in the JDBC bridge (thanks Poarman).
+ - Fixed API mismatch, now works with newer Sleep builds (thanks M. Sheppard + R. Mudge).
+ - Default type for dbSet() is now java.sql.BINARY. Previous java.sql.JAVA_OBJECT was not compatible with some DBMS's and could throw exceptions if type not explicitly given.
+ - Extended and modularized testing framework somewhat
+ 
+1.0 Alpha - First public release
