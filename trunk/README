@@ -114,6 +114,6 @@ HACKING
     under the GPL license.
     
     To execute the unit tests, run the following command:
-    java -cp sleep.jar;mysql.jar;slumber.jar sleep.console.TextConsole tests/jdbc.sl
+    java -cp sleep.jar;mysql.jar;slumber.jar sleep.console.TextConsole tests/all.sl
     
     (assuming mysql.jar is a mysql connector jar)
