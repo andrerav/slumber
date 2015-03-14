@@ -1,0 +1,1 @@
+Slumber is a repository of useful extensions for the java scripting language Sleep. It currently extends Sleep with API for simple database access through a JDBC layer, as well simple text operations.
